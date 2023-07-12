@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { API } from './config';
+import { API, IMAGES_API, IMAGES_API_KEY } from './config';
 import { ApiParams } from '../types';
 
 const getBeer = (id: string) => axios.get(`${API}breweries/${id}`);
-
+const getBeerImages = () => axios.get(`${IMAGES_API}search?query=craft%20beers&per_page=5`, { headers: { Authorization: IMAGES_API_KEY } })
 const getBeerList = (params?: ApiParams) => axios.get(`${API}breweries/`, { params });
 
 /**
@@ -22,4 +22,4 @@ const searchBeerList = (query: string, isAutoComplete = false) =>
 
 const getBeerMetaData = (params?: ApiParams) => axios.get(`${API}breweries/meta`, { params });
 
-export { getBeer, getBeerList, getRandomBeerList, searchBeerList, getBeerMetaData };
+export { getBeer, getBeerImages, getBeerList, getRandomBeerList, searchBeerList, getBeerMetaData };

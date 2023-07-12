@@ -91,7 +91,7 @@ export default function ResponsiveDrawer(props: Props) {
         </Drawer>
       </Box>
       <Box
-        component='main'
+        component='article'
         sx={{
           flexGrow: 1,
           p: 3,
