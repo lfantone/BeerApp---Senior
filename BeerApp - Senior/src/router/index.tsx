@@ -3,6 +3,7 @@ import Offline from '../views/Offline';
 import Home from '../views/Home';
 import NotFound from '../views/404';
 import BeerList from '../views/BeerList';
+import FavoriteList from '../views/FavoriteList';
 import Beer from '../views/Beer';
 import Footer from '../components/Footer';
 import Menu from '../components/Menu';
@@ -17,6 +18,7 @@ const Router = () => (
           <Route index element={<BeerList />} />
           <Route path=':id' element={<Beer />} />
         </Route>
+        <Route path='favorites' element={<FavoriteList />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
       <Footer />

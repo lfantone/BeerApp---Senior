@@ -42,6 +42,7 @@ interface Beer {
   state: string;
   street: string;
   images: Array<Image>;
+  favorite?: boolean;
 }
 
 export type { Beer, Image };

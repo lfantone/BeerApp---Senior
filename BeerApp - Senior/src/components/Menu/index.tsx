@@ -15,8 +15,36 @@ import HomeIcon from '@mui/icons-material/Home';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import TopBar from '../TopBar';
+import { Favorite } from '@mui/icons-material';
+
+const LINKS = [
+  { to: '/', icon: HomeIcon, text: 'Home' },
+  { to: '/beer', icon: SportsBar, text: 'Beer List' },
+  { to: '/favorites', icon: Favorite, text: 'Favorite beers' }
+];
 
 const drawerWidth = 240;
+
+type LinkItemProps = {
+  to: string;
+  icon: React.ElementType;
+  text: string;
+};
+
+function LinkItem({ to, icon: Icon, text }: LinkItemProps) {
+  return (
+    <Link component={RouterLink} to={to}>
+      <ListItem disablePadding>
+        <ListItemButton>
+          <ListItemIcon>
+            <Icon />
+          </ListItemIcon>
+          <ListItemText primary={text} />
+        </ListItemButton>
+      </ListItem>
+    </Link>
+  );
+}
 
 interface Props {
   children: React.ReactNode;
@@ -33,26 +61,9 @@ export default function ResponsiveDrawer(props: Props) {
     <>
       <Divider />
       <List>
-        <Link component={RouterLink} to={`/`}>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <HomeIcon />
-              </ListItemIcon>
-              <ListItemText primary='Home' />
-            </ListItemButton>
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to={`/beer`}>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <SportsBar />
-              </ListItemIcon>
-              <ListItemText primary='Beer List' />
-            </ListItemButton>
-          </ListItem>
-        </Link>
+        {LINKS.map(({ to, icon, text }) => (
+          <LinkItem key={to} to={to} icon={icon} text={text} />
+        ))}
       </List>
     </>
   );

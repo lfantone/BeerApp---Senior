@@ -1,16 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { red, grey } from '@mui/material/colors';
 import { Beer as IBeer } from '../../types';
-import { fetchData } from './utils';
 import { useParams } from 'react-router-dom';
 import { GMAPS_API_KEY } from '../../api/config';
 import { Box, LinearProgress } from '@mui/material';
 import { BusinessOutlined, LocationCityOutlined, PublicOutlined, LocalPhoneOutlined, LinkOutlined, MapsHomeWorkOutlined } from '@mui/icons-material';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '../../utils/db';
 import Hero from '../../components/Hero';
 import Section from '../../components/Section';
 import Map from '../../components/Map';
 import Details, { DetailItem, DetailItemLink, DetailItemText } from '../../components/Details';
 import Gallery from '../../components/Gallery';
+import ActionBar, { FavoriteButton } from '../../components/ActionBar';
 import styles from './beer.module.css';
+import { useBeer } from '../../api/use-beers';
 
 const DEFAULT_DESCRIPTION = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu ultrices metus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla mattis tristique ipsum in dapibus. Donec maximus turpis ac aliquam egestas. Nulla facilisi. Sed vitae urna at metus venenatis consequat. Vivamus quis consectetur felis. Curabitur posuere felis sit amet ante porttitor fermentum ut a sapien.';
 
@@ -27,16 +31,18 @@ function createDetailsFrom(beer: IBeer) {
 
 function Beer() {
   const { id } = useParams();
-  const [beer, setBeer] = useState<IBeer>();
-  const loading = !beer;
+  const { data: beer, loading } = useBeer(id);
+  const [isFavoriteLoading, setFavoriteLoading] = useState(false);
+  const isFavorite = useLiveQuery(() => db.isBeerFavorite(id), [id]);
+  const favoriteColor = isFavorite ? red[500] : grey[500];
   const heroImage = beer?.images.at(Math.floor(Math.random() * beer?.images.length ?? 1));
   const hasCoordinates = beer?.latitude && beer?.longitude;
   const details = beer ? createDetailsFrom(beer) : [];
-  const galleryImages = beer?.images.map(image => ({ src: image.src.original, alt: image.alt, bgColor: image.avg_color, id: image.id }));
-
-  useEffect(() => {
-    id && fetchData(setBeer, id)
-  }, [id]);
+  const galleryImages = beer ? beer.images.map(image => ({ src: image.src.original, alt: image.alt, bgColor: image.avg_color, id: image.id })) : [];
+  const onFavoriteClickHandler = () => {
+    setFavoriteLoading(true);
+    db.toogleBeerFavorite(id).then(() => setFavoriteLoading(false));
+  };
 
   return (
     <Box component="article">
@@ -48,6 +54,9 @@ function Beer() {
         image={{ bgColor: heroImage?.avg_color, src: heroImage?.src.original, alt: heroImage?.alt }}
         height={600}
       />
+      <ActionBar>
+        <FavoriteButton onClick={onFavoriteClickHandler} disabled={loading || isFavoriteLoading} color={favoriteColor} loading={isFavoriteLoading} />
+      </ActionBar>
       <Section
         className={styles['brewery-type']}
         title={beer?.brewery_type}
@@ -59,7 +68,7 @@ function Beer() {
         title="Our products"
         subTitle='Our brewery in pictures'
       >
-        {galleryImages && <Gallery images={galleryImages} />}
+        {galleryImages.length > 0 && <Gallery images={galleryImages} />}
       </Section>
       <Section
         className={styles['brewery-location']}
