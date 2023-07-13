@@ -4,6 +4,7 @@ import Router from './router';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@emotion/react';
 import { theme } from './styles/theme';
+import * as serviceWorker from './service-worker-registration';
 import './styles/global.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
@@ -15,3 +16,5 @@ root.render(
     </ThemeProvider>
   </React.StrictMode>
 );
+
+serviceWorker.register();
